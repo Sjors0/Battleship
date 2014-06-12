@@ -1,23 +1,28 @@
+import java.util.Arrays;
+
 public class Field {
 	private int[][] field;
-	private String[] ships;
+	private int[] ships;
 
 	public Field() {
 		field = new int[10][10]; // makes new playing field consisting of 0's
-		String[] ship = {"ac" , "bs", "bs", "sm","sm","sm", "pb", "pb", "pb","pb"};
+		int[] ship = {5,4,4,3,3,3,2,2,2,2};
 		ships = ship;
 	}
 
-	public String addShip(int xpos1, int ypos1, int xpos2, int ypos2) {
-		if (xpos1 == xpos2 && ypos1 != ypos2) {
-			int max = ypos2;
+	public String addShip(int xpos1, int ypos1, int xpos2, int ypos2) { //nog toevoegen: botsingen
+		if (xpos1 == xpos2 && ypos1 != ypos2) { //schepen kunnen alleen in een rechte lijn worden neergelgd
+			int max = ypos2; 
 			int min = ypos1;
-			if (ypos1 > ypos2) {
+			if (ypos1 > ypos2) { //kijk of ypos1 of ypos2 hoger is, noem min en max
 				max = ypos1;
 				min = ypos2;
 			}
-			for (int i = min; i < max; i++) {
-				field[xpos1][i] = 1;
+			int length = max-min;
+			if(!isLeft(length)){return "Invalid length";} //kijk of een schip van deze lengte nog neergezet kan worden
+			else{removeShip(length+1);}
+			for (int i = min; i <= max; i++) {
+				field[xpos1][i] = 1; //zet schip neer, plek met schip heeft waarde 1
 			}
 			return "Ship begin (" + xpos1 + "," + ypos1 + "), ship end ("
 					+ xpos2 + "," + ypos2 + ").";
@@ -29,7 +34,10 @@ public class Field {
 				max = xpos1;
 				min = xpos2;
 			}
-			for (int i = min; i < max; i++) {
+			int length = max-min;
+			if(!isLeft(length)){return "Invalid length";} //kijk of een schip van deze lengte nog neergezet kan worden
+			else{removeShip(length+1);}
+			for (int i = min; i <= max; i++) {
 				field[i][ypos1] = 1;
 			}
 			return "Ship begin (" + xpos1 + "," + ypos1 + "), ship end ("
@@ -45,17 +53,52 @@ public class Field {
 			return false;
 	}
 	public String shipsLeft(){
-		return ships.toString();
+		String res = "<Ships left:(";
+		for(int i = 0; i < ships.length; i++){
+			res = res + ships[i] + ", ";
+		}
+		return res + ")>";
+	}
+	public boolean isLeft(int r){
+		if(r != 2 &&r != 3 &&r != 4 &&r != 5){return false;}
+		for(int i = 0; i < 10; i++){
+			if(ships[i]==r){
+			return true;}
+		}
+		return false;
 	}
 	
 	public String getField(){
 		String res = "";
 		for(int i = 0; i < 10; i++){
 			for(int j = 0; j < 10; j++){
-				res = res + field[i][j] + " ";
+				res = res + field[j][i] + " ";
 			}
 			res = res + "\r"; 
 		}
 		return res;
+	}
+	public void removeShip(int r){
+		int m=-1;
+		for(int i = 0; i < 10; i++){
+			if(ships[i]==r){
+				m=i;
+			}
+		}
+		if(m!=-1){
+		ships[m]=0;
+		}
+	}
+	public String shoot(int x,int y){
+		if(field[x][y]==2){
+			return "Already shot here.";
+		}
+		if(isHit(x, y)){
+			field[x][y]=2;
+			return "Hit at ("+x+", "+y+ ").";
+		}
+		else{field[x][y] = 3;
+			return "Miss.";
+		}
 	}
 }
