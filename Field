@@ -1,0 +1,61 @@
+public class Field {
+	private int[][] field;
+	private String[] ships;
+
+	public Field() {
+		field = new int[10][10]; // makes new playing field consisting of 0's
+		String[] ship = {"ac" , "bs", "bs", "sm","sm","sm", "pb", "pb", "pb","pb"};
+		ships = ship;
+	}
+
+	public String addShip(int xpos1, int ypos1, int xpos2, int ypos2) {
+		if (xpos1 == xpos2 && ypos1 != ypos2) {
+			int max = ypos2;
+			int min = ypos1;
+			if (ypos1 > ypos2) {
+				max = ypos1;
+				min = ypos2;
+			}
+			for (int i = min; i < max; i++) {
+				field[xpos1][i] = 1;
+			}
+			return "Ship begin (" + xpos1 + "," + ypos1 + "), ship end ("
+					+ xpos2 + "," + ypos2 + ").";
+		}
+		if (ypos1 == ypos2 && xpos1 != xpos2) {
+			int max = xpos2;
+			int min = xpos1;
+			if (xpos1 > xpos2) {
+				max = xpos1;
+				min = xpos2;
+			}
+			for (int i = min; i < max; i++) {
+				field[i][ypos1] = 1;
+			}
+			return "Ship begin (" + xpos1 + "," + ypos1 + "), ship end ("
+					+ xpos2 + "," + ypos2 + ").";
+		}
+		return "Invalid position";
+	}
+
+	public boolean isHit(int x, int y) {
+		if (field[x][y] == 1) {
+			return true;
+		} else
+			return false;
+	}
+	public String shipsLeft(){
+		return ships.toString();
+	}
+	
+	public String getField(){
+		String res = "";
+		for(int i = 0; i < 10; i++){
+			for(int j = 0; j < 10; j++){
+				res = res + field[i][j] + " ";
+			}
+			res = res + "\r"; 
+		}
+		return res;
+	}
+}
