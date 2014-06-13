@@ -1,4 +1,3 @@
-import java.util.Arrays;
 
 public class Field {
 	private int[][] field;
@@ -10,7 +9,7 @@ public class Field {
 		ships = ship;
 	}
 
-	public String addShip(int xpos1, int ypos1, int xpos2, int ypos2) { //nog toevoegen: botsingen
+	public String addShip(int xpos1, int ypos1, int xpos2, int ypos2) {
 		if (xpos1 == xpos2 && ypos1 != ypos2) { //schepen kunnen alleen in een rechte lijn worden neergelgd
 			int max = ypos2; 
 			int min = ypos1;
@@ -19,8 +18,12 @@ public class Field {
 				min = ypos2;
 			}
 			int length = max-min;
-			if(!isLeft(length)){return "Invalid length";} //kijk of een schip van deze lengte nog neergezet kan worden
+			for(int i = min; i <= max; i++){
+				if(field[xpos1][i]!=0){return "You can't place it on another boat!";} //kijk of er op de gwenste plaats een andere boot ligt
+			}
+			if(!isLeft(length)){return "No ships of that length left.";} //kijk of een schip van deze lengte nog neergezet kan worden
 			else{removeShip(length+1);}
+			
 			for (int i = min; i <= max; i++) {
 				field[xpos1][i] = 1; //zet schip neer, plek met schip heeft waarde 1
 			}
@@ -35,7 +38,10 @@ public class Field {
 				min = xpos2;
 			}
 			int length = max-min;
-			if(!isLeft(length)){return "Invalid length";} //kijk of een schip van deze lengte nog neergezet kan worden
+			for(int i = min; i <= max; i++){
+				if(field[i][ypos1]!=0){return "You can't place it on another boat!";}
+			}
+			if(!isLeft(length+1)){return "No ships of that length left.";} //kijk of een schip van deze lengte nog neergezet kan worden
 			else{removeShip(length+1);}
 			for (int i = min; i <= max; i++) {
 				field[i][ypos1] = 1;
@@ -47,7 +53,7 @@ public class Field {
 	}
 
 	public boolean isHit(int x, int y) {
-		if (field[x][y] == 1) {
+		if (field[x][y] == 1 || field[x][y]==3) { //Kijkt of een schot op bepaalde plek boot raakt
 			return true;
 		} else
 			return false;
@@ -55,14 +61,16 @@ public class Field {
 	public String shipsLeft(){
 		String res = "<Ships left:(";
 		for(int i = 0; i < ships.length; i++){
-			res = res + ships[i] + ", ";
+			if(ships[i]!=0){
+			res = res + ships[i] + ", "; //geeft aan hoeveel boten van welke lengte nog over zijn
+		}
 		}
 		return res + ")>";
 	}
 	public boolean isLeft(int r){
-		if(r != 2 &&r != 3 &&r != 4 &&r != 5){return false;}
+		if( r<2 || r > 5){return false;} //als het niet tussen2 en 5 zit sowieso niet meer
 		for(int i = 0; i < 10; i++){
-			if(ships[i]==r){
+			if(ships[i]==r){ //kijkt in ships of er nog een schip met lengte r in zit
 			return true;}
 		}
 		return false;
@@ -98,7 +106,7 @@ public class Field {
 			return "Hit at ("+x+", "+y+ ").";
 		}
 		else{field[x][y] = 3;
-			return "Miss.";
+			return "Miss at ("+x+", "+y+").";
 		}
 	}
 }
